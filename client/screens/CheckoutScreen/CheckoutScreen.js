@@ -19,6 +19,7 @@ import {
   deleteCart,
   createOrder,
   getAmountAndCart,
+  getCustomerId,
 } from "../../utils/FirestoreUtil";
 import { app } from "../../config/firebase-config";
 import { getFirestore, onSnapshot, doc, updateDoc } from "firebase/firestore";
@@ -91,11 +92,14 @@ export default function CheckoutScreen() {
   //   }
   // }
 
+
   async function sendInvoice() {
     const { amount, cart } = await getAmountAndCart(user);
+    const customerData = await getCustomerId(user);
+    console.log(`customer data = ${customerData}`)
     console.log("cart", cart);
     console.log("paymentId", paymentId), console.log("user", user.uid);
-    fetch("http://10.0.2.2:3301/send-invoice", {
+    fetch("https://sragenapp-server.herokuapp.com/send-invoice", {
       method: "POST",
       mode: "cors",
       headers: {

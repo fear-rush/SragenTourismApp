@@ -135,9 +135,13 @@ export const getCustomerId = async (user) => {
   return customerId.data();
 };
 
-export const storeCustomerId = async (userUid) => {
-  await setDoc(doc(db, `customers/${userUid}`), {
-    customer_id: userUid,
+export const storeCustomerId = async (user, name, email, phoneNumber, address) => {
+  await setDoc(doc(db, `customers/${user.uid}`), {
+    id: user.uid,
+    name: name,
+    email: email,
+    phone_number: phoneNumber,
+    address: address,
   });
 };
 
