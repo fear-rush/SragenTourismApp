@@ -71,14 +71,14 @@ app.post("/send-invoice", (req, res) => {
       host: "smtp.gmail.com",
       port: 587,
       auth: {
-        user: "muhfiras1@gmail.com",
-        pass: "somethingisnoteasytobreach101",
+        user: "email",
+        pass: "pass",
       },
     });
 
     let mailOptions = {
-      from: "email",
-      to: "pass",
+      from: "muhfiras1@gmail.com",
+      to: "fluffyfuffy1@gmail.com",
       subject: "test email",
       text: "test attachment",
       attachments: [
