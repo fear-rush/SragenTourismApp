@@ -77,8 +77,8 @@ app.post("/send-invoice", (req, res) => {
     });
 
     let mailOptions = {
-      from: "muhfiras1@gmail.com",
-      to: "fluffyfuffy1@gmail.com",
+      from: "email",
+      to: "pass",
       subject: "test email",
       text: "test attachment",
       attachments: [
