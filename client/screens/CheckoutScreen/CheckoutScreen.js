@@ -95,7 +95,7 @@ export default function CheckoutScreen() {
     const { amount, cart } = await getAmountAndCart(user);
     console.log("cart", cart);
     console.log("paymentId", paymentId), console.log("user", user.uid);
-    fetch("http://10.0.2.2:3301/send-invoice", {
+    fetch("https://sragenapp-server.herokuapp.com/send-invoice", {
       method: "POST",
       mode: "cors",
       headers: {
