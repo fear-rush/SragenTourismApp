@@ -109,7 +109,10 @@ export default function CheckoutScreen() {
       body: JSON.stringify({
         paymentNumber: paymentId,
         item: cart,
-        username: user.uid,
+        username: customerData.username,
+        address: customerData.address,
+        zip: customerData.email,
+        city: customerData.phone_number,
       }),
     });
   }

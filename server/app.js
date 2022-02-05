@@ -41,6 +41,10 @@ app.post("/send-invoice", (req, res) => {
     },
     client: {
       company: req.body.username,
+      address: req.body.address,
+      zip: req.body.email,
+      city: req.body.phoneNumber,
+      country: "",
     },
     invoiceNumber: req.body.paymentNumber,
     invoiceDate: date,
