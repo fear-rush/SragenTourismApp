@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
     width: 350,
     alignSelf: "center",
     borderColor: "#fff",
+    color: "#fff",
   },
   text: {
     color: "#ddd",
