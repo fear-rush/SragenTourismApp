@@ -1,11 +1,11 @@
-// IMPORT PACKAGES
 import express from "express";
 import easyinvoice from "easyinvoice";
 import fs from "fs";
 import path from "path";
 import nodemailer from "nodemailer";
-import cors from 'cors';
+import cors from "cors";
 import bodyParser from "body-parser";
+import "dotenv/config";
 
 const app = express();
 let imgPath = path.resolve("img", "invoice.png");
@@ -14,8 +14,8 @@ function base64_encode(img) {
   return new Buffer.from(png).toString("base64");
 }
 
-app.use(cors({origin: true, credentials: true}));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(cors({ origin: true, credentials: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.post("/send-invoice", (req, res) => {
@@ -25,7 +25,7 @@ app.post("/send-invoice", (req, res) => {
 
   let data = {
     currency: "IDR",
-    taxNotation: "vat", //or gst
+    // taxNotation: "vat", //or gst
     marginTop: 25,
     marginRight: 25,
     marginLeft: 25,
@@ -42,8 +42,8 @@ app.post("/send-invoice", (req, res) => {
     client: {
       company: req.body.username,
       address: req.body.address,
-      zip: req.body.email,
-      city: req.body.phoneNumber,
+      zip: "",
+      city: "",
       country: "",
     },
     invoiceNumber: req.body.paymentNumber,
@@ -75,14 +75,14 @@ app.post("/send-invoice", (req, res) => {
       host: "smtp.gmail.com",
       port: 587,
       auth: {
-        user: "email",
-        pass: "pass",
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
       },
     });
 
     let mailOptions = {
-      from: "email",
-      to: "emai",
+      from: "laravelbeautiful@gmail.com",
+      to: "fluffyfuffy1@gmail.com",
       subject: "test email",
       text: "test attachment",
       attachments: [
@@ -103,7 +103,14 @@ app.post("/send-invoice", (req, res) => {
   };
 });
 
-let PORT = 3301;
+let PORT = process.env.PORT || 3301;
+
+app.get("/", (req, res) => {
+  res.json({
+    message: `Build succeeded on port ${PORT}`,
+  });
+});
+
 app.listen(PORT, () => {
-  console.log(`Listening on port 3001`);
+  console.log(`Listening on port ${PORT}`);
 });

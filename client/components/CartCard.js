@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import { separateNumber } from '../utils/CommonUtil';
 
 const CartCard = ({ item }) => {
   return (
     <View style={styles.card}>
       <Image source={{ uri: item.image }} style={styles.image}/>
       <View>
-        <Text>Product: {item.title}</Text>
-        <Text>Qty: {item.count}</Text>
-        <Text>{item.price}</Text>
+        <Text style={styles.cardText}>Destination: {item.title}</Text>
+        <Text style={styles.cardText}>Ticket Price: Rp. {separateNumber(item.price)}</Text>
+        <Text style={styles.cardText}>Total Ticket: {item.count}</Text>
+        <Text style={styles.cardText}>Date Reserved: {item.date}</Text>
       </View>
     </View>
   );
@@ -30,5 +32,11 @@ const styles = StyleSheet.create({
   image: {
     height: 150,
     width: '40%',
+  },
+  cardText: {
+    fontSize: 14,
+    fontWeight: "400",
+    marginTop: 4,
+    marginLeft: 4
   }
 })

@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
-  Button,
   StyleSheet,
   Text,
   View,
   FlatList,
-  Alert,
   Modal,
   Pressable,
 } from "react-native";
@@ -15,15 +13,14 @@ import CartCard from "../../components/CartCard";
 import { LoginContext } from "../../utils/LoginProvider";
 import { createUUID } from "../../utils/CommonUtil";
 import {
-  storeCustomerId,
   deleteCart,
   createOrder,
   getAmountAndCart,
-  getCustomerId,
+  getUser,
 } from "../../utils/FirestoreUtil";
 import { app } from "../../config/firebase-config";
 import { getFirestore, onSnapshot, doc, updateDoc } from "firebase/firestore";
-import axios from "axios";
+import { separateNumber } from "../../utils/CommonUtil";
 
 const db = getFirestore(app);
 
@@ -37,7 +34,7 @@ export default function CheckoutScreen() {
 
   const checkoutHandler = async () => {
     try {
-      await storeCustomerId(user.uid);
+      // await storeCustomerId(user.uid);
       const { amount, cart } = await getAmountAndCart(user);
       await createOrder(cart, paymentId, user.uid, amount);
       // console.log("cart", cart);
@@ -52,73 +49,42 @@ export default function CheckoutScreen() {
     await updateDoc(paymentStatus, {
       status: "Success",
     });
-    await deleteCart(user.uid);
     // setList([]);
   };
 
-  // let axiosConfig = {
-  //   headers: {
-  //       'Content-Type': 'application/json;charset=UTF-8',
-  //       "Access-Control-Allow-Origin": "*",
-  //   }
-  // };
-
-  // const sendInvoice = async () => {
-  //   const { amount, cart } = await getAmountAndCart(user);
-  //   axios
-  //     .post(
-  //       "http://10.0.0.2:3301/send-invoice",
-  //       {
-  //         paymentNumber: paymentId,
-  //         item: cart,
-  //         username: user.uid,
-  //       }, axiosConfig
-  //     )
-  //     .catch((err) => console.log(err));
-  // };
-
-  // const sendInvoice = async () => {
-  //   let response = () => {
-  //     return new Promise(async (resolve, reject) => {
-  //       const {amount, cart} = await getAmountAndCart(user);
-  //       axios.post('http://localhost:3301/send-invoice', {
-  //         paymentNumber: paymentId,
-  //         item: cart,
-  //         username: user.uid
-  //       })
-  //     }).then(response => {
-  //       resolve(response);
-  //     })
-  //   }
-  // }
-
-
   async function sendInvoice() {
+    const { userData } = await getUser(user.uid);
     const { amount, cart } = await getAmountAndCart(user);
-    const customerData = await getCustomerId(user);
-    console.log(`customer data = ${customerData}`)
-    console.log("cart", cart);
-    console.log("paymentId", paymentId), console.log("user", user.uid);
-    fetch("https://sragenapp-server.herokuapp.com/send-invoice", {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        paymentNumber: paymentId,
-        item: cart,
-        username: customerData.username,
-        address: customerData.address,
-        zip: customerData.email,
-        city: customerData.phone_number,
-      }),
-    });
+
+    if (cart != null || cart != undefined || cart != []) {
+      fetch("https://sragenapp-server.herokuapp.com/send-invoice", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          paymentNumber: paymentId,
+          item: cart,
+          username: userData.name,
+          address: userData.address,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+          qrData: paymentId,
+        }),
+      });
+      console.log(`this is paymentId ${paymentId} `)
+      console.log("paymentId", paymentId), console.log("user", user.uid);
+      console.log(`this is user information ${JSON.stringify(userData)}`);
+      console.log(`this is cart ${cart}`);
+      await deleteCart(user.uid);
+    } else {
+      alert("Items not found");
+    }
   }
 
   console.log(paymentId);
-  // console.log(list);
 
   useEffect(() => {
     setPaymentId(createUUID());
@@ -136,9 +102,6 @@ export default function CheckoutScreen() {
       console.log(error);
       alert("error on subcribe on payment", error.message);
     }
-    // return () => {
-    //   subscriber;
-    // };
   }, [list]);
 
   const PaymentModal = () => {
@@ -153,11 +116,10 @@ export default function CheckoutScreen() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Total Price: {price}</Text>
+            <Text style={styles.modalText}>Total Price: {separateNumber(price)}</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
-                // setPaymentId(createUUID(12));
                 sendInvoice();
 
                 confirmPaymentHandler();
@@ -176,17 +138,17 @@ export default function CheckoutScreen() {
     return (
       <View>
         <View>
-          <Text>Total: </Text>
-          <Text>{price}</Text>
+          <Text style={styles.total}>Total: Rp. {separateNumber(price)} </Text>
         </View>
-        <Button
-          title="CHECK OUT"
+        <Pressable
+          style={styles.checkoutButton}
           onPress={() => {
             checkoutHandler();
-            // console.log(`paymentID: ${paymentId}`);
             setModalVisible(true);
           }}
-        />
+        >
+          <Text style={styles.checkoutText}>Check Out</Text>
+        </Pressable>
         <PaymentModal />
       </View>
     );
@@ -237,6 +199,19 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
   },
+  checkoutButton: {
+    display: "flex",
+    alignSelf:"center",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    width: 220,
+    backgroundColor: "#FF6B00",
+  },
+  checkoutText: {
+    color: "#FFF",
+    textAlign: "center",
+  },
   buttonOpen: {
     backgroundColor: "#F1944F",
   },
@@ -253,4 +228,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
   },
+  total: {
+    fontSize: 16,
+    marginTop: 16,
+    marginLeft: 14,
+    marginBottom: 20 
+  }
 });

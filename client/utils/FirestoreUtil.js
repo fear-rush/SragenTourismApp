@@ -25,7 +25,6 @@ import { getCombinedArray, getPrice, updateOrAdd } from "./CommonUtil";
 
 const db = getFirestore(app);
 
-
 export async function getProducts(ids) {
   try {
     if (ids && ids.length > 0) {
@@ -44,10 +43,28 @@ export async function getProducts(ids) {
     }
   } catch (error) {
     console.log(error);
-    alert('error in getProducts', error.message);
+    alert("error in getProducts", error.message);
   }
 
   return [];
+}
+
+export async function getUser(userUid) {
+  try {
+    const docRef = doc(db, "customers", userUid);
+    const docSnap = await getDoc(docRef);
+    // console.log(`this is docsnap ${JSON.stringify(docSnap.data())}`);
+    const userData = {
+      email: docSnap.data().email,
+      address: docSnap.data().address,
+      id: docSnap.data().id,
+      name: docSnap.data().name,
+      phoneNumber: docSnap.data().phone_number,
+    }
+    return { userData };
+  } catch (error) {
+    alert("error in getUser", error);
+  }
 }
 
 export const getCart = async (user) => {
@@ -58,11 +75,11 @@ export const getCart = async (user) => {
     return { cart, cartCollection };
   } catch (error) {
     console.log(error);
-    alert('error in getCart', error.message);
+    alert("error in getCart", error.message);
   }
 };
 
-export const addToCart = async (user, productId) => {
+export const addToCart = async (user, productId, date, number) => {
   try {
     if (!user) {
       return;
@@ -75,25 +92,23 @@ export const addToCart = async (user, productId) => {
         db,
         `customers/${user.uid}/cart/${productId.toString()}`
       );
-      await updateDoc(docs, { count: increment(1) });
+      await updateDoc(docs, { count: number, date: date });
       const path = await doc(
         db,
         `customers/${user.uid}/cart/${productId.toString()}`
       );
-      // const pathRes = await getDoc(path);
-      // console.log(pathRes.data());
     } else {
       setDoc(doc(db, `customers/${user.uid}/cart/${productId.toString()}`), {
         id: productId,
-        count: 1,
+        count: number,
+        date: date,
       });
     }
   } catch (error) {
     console.log(error);
-    alert('error in addToCart', error.message);
+    alert("error in addToCart", error.message);
   }
 };
-
 
 export const getCombinedCart = async (user) => {
   const { cart } = await getCart(user);
@@ -115,12 +130,11 @@ export const subscribeToCartUpdate = (user, updateToCart) => {
 //   const paymentStatus = doc(db, `order/${user.uid}`);
 //   return onSnapshot(paymentStatus, (snapshot) => {
 //     snapshot.docChanges.forEach((change) => {
-//       change.doc.data();      
+//       change.doc.data();
 //       console.log(change.doc.data())
 //     })
 //   })
 // }
-
 
 export const getUpdateCart = (old, change, product) => {
   const data = change.doc?.data();
@@ -128,16 +142,21 @@ export const getUpdateCart = (old, change, product) => {
   return updateOrAdd(old, newArray[0]);
 };
 
-
 export const getCustomerId = async (user) => {
-  const customer = await doc(db, `customers/${user.uid}`);
+  const customer = doc(db, `customers/${user.uid}`);
   const customerId = getDocs(customer);
   return customerId.data();
 };
 
-export const storeCustomerId = async (user, name, email, phoneNumber, address) => {
-  await setDoc(doc(db, `customers/${user.uid}`), {
-    id: user.uid,
+export const storeCustomerId = async (
+  userUid,
+  name,
+  email,
+  phoneNumber,
+  address
+) => {
+  await setDoc(doc(db, `customers/${userUid}`), {
+    id: userUid,
     name: name,
     email: email,
     phone_number: phoneNumber,
@@ -161,16 +180,16 @@ export const deleteCart = async (userUid) => {
 };
 
 export const createOrder = async (cart, paymentId, userUid, amount) => {
-    await setDoc(doc(db, `order/${paymentId}`), {
+  await setDoc(doc(db, `order/${paymentId}`), {
     user_uid: userUid,
     status: `Waiting for confirmation`,
     amount: amount,
-    payment_id: paymentId
+    payment_id: paymentId,
   });
 
   // const orderCart = collection(db, `order/${paymentId}/cart`);
   cart.forEach((product) => {
-      setDoc(doc(db, `order/${paymentId}/cart/${product.id.toString()}`), {
+    setDoc(doc(db, `order/${paymentId}/cart/${product.id.toString()}`), {
       price: product.price,
       count: product.count,
     });
@@ -180,34 +199,29 @@ export const createOrder = async (cart, paymentId, userUid, amount) => {
 export const completeOrder = async (paymentId) => {
   const order = doc(db, `order/${paymentId}`);
   await updateDoc(order, {
-    status: 'Success'
-  })
-  const userUid = await (await getDocs(order));
+    status: "Success",
+  });
+  const userUid = await await getDocs(order);
   const userUidData = await userUid.data().user_uid;
   await deleteCart(userUidData);
-}
-
+};
 
 export const updatePaymentStatus = async (paymentId) => {
   const paymentStatus = doc(db, `order/${user.uid}`);
   await updateDoc(paymentStatus, {
-    status: "Success"
-  })
-
-}
+    status: "Success",
+  });
+};
 
 export const getAmountAndCart = async (user) => {
   const { cart } = await getCart(user);
   const products = await getProducts(cart.map((data) => data.id));
   const combinedCart = getCombinedArray(cart, products);
 
-  return { amount: getPrice(combinedCart), cart: combinedCart }
-}
+  return { amount: getPrice(combinedCart), cart: combinedCart };
+};
 
-
-
-/*************************  WEB V8 ****************************/
-
+/*********  WEB V8 **********/
 
 // export const getCustomerId = async (user) => {
 //   const customer = await firestore.collection("customers").doc(user.uid).get();
@@ -244,5 +258,4 @@ export const getAmountAndCart = async (user) => {
 //   });
 // };
 
-/********************** ***************************************************/
-
+/******** *****************/

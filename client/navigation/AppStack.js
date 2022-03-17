@@ -25,7 +25,7 @@ export default function AppStack() {
             <Stack.Screen
               name="Shoppers"
               component={MainStack}
-              options={{ title: "DUMMY APP", headerTitleAlign: "center" }}
+              options={{ title: "Sragen Tourism App", headerTitleAlign: "center" }}
             />
             <Stack.Screen
               name="Product"

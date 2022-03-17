@@ -16,7 +16,7 @@ export const getPrice = (cart) => {
   cart.forEach((item) => {
     amount += item.price * item.count;
   });
-  return amount * 100;
+  return amount;
 };
 
 export const updateOrAdd = (old, item) => {
@@ -37,3 +37,7 @@ export const createUUID = () => {
   }
   return uuid.join("");
 };
+
+export const separateNumber = (x) => {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

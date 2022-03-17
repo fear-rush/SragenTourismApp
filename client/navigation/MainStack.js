@@ -12,7 +12,7 @@ export default function MainStack(props) {
   const ProfileScreen = () => {
     return (
       <View>
-        <Text>Hi There</Text>
+        {/* <Text>Hi There</Text> */}
         <Button title="SIGN OUT" onPress={FirebaseUtil.signOut} />
       </View>
     );

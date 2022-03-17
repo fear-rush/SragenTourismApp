@@ -2309,6 +2309,13 @@
     "sudo-prompt" "^9.0.0"
     "wcwidth" "^1.0.1"
 
+"@react-native-community/datetimepicker@^5.1.0":
+  "integrity" "sha512-DsKmdthZIb1AfuvpPE0iOiw4iQLXUWY3mJEYpGe9iUJt7pOkNnqHk6D95wqg4wjZ2bEBLAPfvndoeWZAjAZKfw=="
+  "resolved" "https://registry.npmjs.org/@react-native-community/datetimepicker/-/datetimepicker-5.1.0.tgz"
+  "version" "5.1.0"
+  dependencies:
+    "invariant" "^2.2.4"
+
 "@react-native-firebase/app@^14.2.3", "@react-native-firebase/app@14.2.2":
   "integrity" "sha512-PSAYqQGo+/k2KgqOk3sLu0lRxvymvB7Ps4qX2A5JyaYWM419ofZtmYn8glwOB0qWaaMiF+dsh9gAzikxTD3DkA=="
   "resolved" "https://registry.npmjs.org/@react-native-firebase/app/-/app-14.2.3.tgz"
@@ -11003,6 +11010,11 @@
     "flow-parser" "^0.121.0"
     "jscodeshift" "^0.11.0"
     "nullthrows" "^1.1.1"
+
+"react-native-date-picker@^4.2.0":
+  "integrity" "sha512-IfbK7Eh5By8rdjiu/pvqLF8NkFX9pVsY7Vn6+MkLSiFcLIGFd7NaENRJKl75/xNZuY5CkIiRVksS9abEl/II8g=="
+  "resolved" "https://registry.npmjs.org/react-native-date-picker/-/react-native-date-picker-4.2.0.tgz"
+  "version" "4.2.0"
 
 "react-native-gesture-handler@>= 1.0.0", "react-native-gesture-handler@~2.1.0":
   "integrity" "sha512-1+qMhsXKKWTPAFi2ZY8rEhP/4xIevWNb1zLU9MzJkr7tRIEW4G+ipxjLyCw+7hQeqeeIbyZ8kkTyHAUuwTrHDA=="
